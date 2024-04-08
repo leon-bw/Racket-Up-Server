@@ -13,6 +13,8 @@ app.use("/", (req, res) => {
     res.send(`<h1> Welcome to Leon's express app</h1>`)
 });
 
+app.use("/api/users", userRoutes);
+
 app.listen(PORT, () => {
     console.log(`Express app listening on port ${PORT}`);
 })
