@@ -17,7 +17,7 @@ module.exports = [
         email: "wd@test.com",
         username: "badmingtonChamp",
         password: "1234",
-        sport: "badmington",
+        sport: "Badmington",
         skill_level: "1",
         role: "1"
     },
@@ -28,9 +28,30 @@ module.exports = [
         email: "ht@test.com",
         username: "squashChamp",
         password: "12345",
-        sport: "squash",
+        sport: "Squash",
         skill_level: "2",
         role: "1"
     },
-    
+    {
+        id: 4,
+        first_name: "Tike",
+        last_name: "Myson",
+        email: "tm@test.com",
+        username: "boxinfChamp",
+        password: "123456",
+        sport: "Squash",
+        skill_level: "1",
+        role: "1"
+    },
+    {
+        id: 5,
+        first_name: "Lennifer",
+        last_name: "Jawrence",
+        email: "lj@test.com",
+        username: "actingChamp",
+        password: "1234567",
+        sport: "Tennis",
+        skill_level: "4",
+        role: "1"
+    },
 ]
