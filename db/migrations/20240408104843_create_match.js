@@ -7,10 +7,12 @@ exports.up = function (knex) {
     table.increments("id");
     table.integer("user_id_1");
     table.integer("user_id_2");
-    table.string("sport_id");
+    table.integer("sport_id");
     table.integer("court_id");
     table.integer("skill_level");
-    table.string("role");
+    table.integer("result");
+    table.timestamp("create_at").defaultTo(knex.fn.now());
+    table.dateTime("updated_at").defaultTo(knex.raw("NULL ON UPDATE CURRENT_TIMESTAMP"));
   });
 };
 

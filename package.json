@@ -9,7 +9,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "start": "node --watch server.js",
-    "migrate": "cd db && knex migrate:latest"
+    "migrate": "cd db && knex migrate:latest",
+    "rollback": "knex migrate:rollback"
   },
   "devDependencies": {
     "vite": "^5.2.0"
