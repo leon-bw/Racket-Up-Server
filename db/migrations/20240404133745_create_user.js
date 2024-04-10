@@ -12,7 +12,6 @@ exports.up = function (knex) {
     table.string("password").notNullable();
     table.string("sport").notNullable();
     table.integer("skill_level").notNullable();
-    table.integer("role");
   });
 };
 
