@@ -17,7 +17,6 @@ router.post("/signup", async (req, res) => {
     username,
     skill_level,
     sport,
-    role,
   } = req.body;
 
   if (
@@ -27,7 +26,7 @@ router.post("/signup", async (req, res) => {
       !password ||
       !username ||
       !skill_level,
-    !sport || !role)
+    !sport)
   ) {
     return res.status(400).json({ error: "Please enter the required fields." });
   }
@@ -48,7 +47,9 @@ router.post("/signup", async (req, res) => {
     await knex("users").insert(newUser);
     return res.status(201).json(newUser);
   } catch (error) {
-    return res.status(400).json({ error: `User registration failed: ${error.message}` });
+    return res
+      .status(400)
+      .json({ error: `User registration failed: ${error.message}` });
   }
 });
 
@@ -58,7 +59,7 @@ router.post("/login", async (req, res) => {
   if (!username) {
     return res.status(400).send("Please enter a username");
   }
-  
+
   if (!password) {
     return res.status(400).send("Please enter a password");
   }
@@ -69,13 +70,11 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ error: "Username doesn't exist" });
     }
 
-    
     const validPassword = bcrypt.compareSync(password, user.password);
-    console.log(validPassword)
+    console.log(validPassword);
     if (!validPassword) {
       return res.status(400).send({ error: "Invalid password" });
     }
-
 
     const authToken = jwt.sign(
       { id: user.id, username: user.username },
@@ -107,7 +106,9 @@ router.get("/profile", async (req, res) => {
       res.json(user);
     }
   } catch (error) {
-    return res.status(401).json({ error: `Invalid Authorization Token ${error.message}` });
+    return res
+      .status(401)
+      .json({ error: `Invalid Authorization Token ${error.message}` });
   }
 });
 

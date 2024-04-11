@@ -7,7 +7,7 @@ exports.up = function (knex) {
     table.increments("id");
     table.string("name");
     table.string("location");
-    table.string("booked_hours");
+    table.string("available_courts");
   });
 };
 

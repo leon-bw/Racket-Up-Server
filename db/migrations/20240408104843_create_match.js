@@ -9,8 +9,8 @@ exports.up = function (knex) {
     table.integer("user_id_2");
     table.integer("sport_id");
     table.integer("court_id");
-    table.integer("skill_level");
-    table.integer("result");
+    table.string("skill_level");
+    table.string("availability");
     table.timestamp("create_at").defaultTo(knex.fn.now());
     table.dateTime("updated_at").defaultTo(knex.raw("NULL ON UPDATE CURRENT_TIMESTAMP"));
   });
