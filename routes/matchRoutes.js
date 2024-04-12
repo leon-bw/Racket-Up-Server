@@ -32,7 +32,62 @@ router.post("/profile", async (req, res) => {
   }
 });
 
+router.post("/find-matches", async (req, res) => {
+
+    const {level, startTime, endTime, date} = req.body
+
+    let startTimeArr = startTime.split(":");
+    let endTimeArr = endTime.split(":");
+
+    const startDate = new Date(date);
+    startDate.setHours(parseInt(startTimeArr[0], 10))
+
+    const endDate = new Date(date);
+    endDate.setHours(parseInt(endTimeArr[0], 10))
+
+  try {
+    const matches = await knex("matches")
+      .join("courts", "matches.court_id", "courts.id")
+      .join("sport", "matches.sport_id", "sport.id")
+      .where("matches.skill_level", "=", level)
+      .where("matches.time", ">=", startDate)
+      .where("matches.time", "<", endDate)
+      .select("*");
+
+    await Promise.all(
+      matches.map(async (match) => {
+        const userOne = await knex("matches")
+          .join("users", "users.id", "matches.user_id_1")
+          .where("matches.id", "=", match.id)
+          .select("*")
+          .first();
+
+        const userTwo = await knex("matches")
+          .join("users", "users.id", "matches.user_id_2")
+          .where("matches.id", "=", match.id)
+          .select("*")
+          .first();
+
+        match.users = [userOne, userTwo];
+
+        return match;
+      })
+    );
+
+    if (matches.length === 0) {
+      return res.status(200).json([{ data: "No games available at this time" }]);
+    }
+    return res.status(200).json({ data: matches });
+  } catch (error) {
+    return res.status(500).json({
+      error: "Failed to retrieve matches. Please try again later.",
+    });
+  }
+});
+
+
 router.get("/find-matches", async (req, res) => {
+
   try {
     const matches = await knex("matches")
       .join("courts", "matches.court_id", "courts.id")
@@ -60,7 +115,7 @@ router.get("/find-matches", async (req, res) => {
     );
 
     if (matches.length === 0) {
-      return res.status(404).json({ error: "No matches found" });
+      return res.status(404).json([{ error: "No matches found" }]);
     }
     return res.status(200).json({ data: matches });
   } catch (error) {
@@ -70,40 +125,5 @@ router.get("/find-matches", async (req, res) => {
   }
 });
 
-router.get("/find-match", async (req, res) => {
-  const { skill_level } = req.params;
-
-  try {
-    const skillLevel = await knex("users")
-      .where("skill_level", skill_level)
-      .select("*");
-    if (skillLevel.length === 0) {
-      return res.status(404).json({ error: "Skill level not found" });
-    }
-    return res.status(200).json({ data: skillLevel });
-  } catch (error) {
-    console.error("Error fetching skill levels: ", error);
-    return res.status(500).json({
-      error: "Failed to retrieve skill levels. Please try again later.",
-    });
-  }
-});
-
-router.get("/find-match", async (req, res) => {
-  const { chosenSport } = req.params;
-
-  try {
-    const sport = await knex("matches").where("sport", chosenSport).select("*");
-    if (sport.length === 0) {
-      return res.status(404).json({ error: "sport not found" });
-    }
-    return res.status(200).json({ data: sport });
-  } catch (error) {
-    console.error("Error fetching sport", error);
-    return res.status(500).json({
-      error: "Failed to retrieve sport. Please try again later.",
-    });
-  }
-});
 
 module.exports = router;

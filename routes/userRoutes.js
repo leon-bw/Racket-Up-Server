@@ -89,6 +89,7 @@ router.post("/login", async (req, res) => {
 });
 
 router.get("/profile", async (req, res) => {
+
   if (!req.headers.authorization) {
     return res._construct(401).send({ error: "Please login" });
   }
