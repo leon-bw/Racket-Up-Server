@@ -12,9 +12,12 @@ app.use(cors());
 
 app.use(express.json());
 
+app.use("/profile", userRoutes);
+app.use("/signup", userRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/matches", matchRoutes);
 
 app.listen(PORT, () => {
   console.log(`Express app listening on port ${PORT}`);
 });
+

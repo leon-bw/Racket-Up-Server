@@ -33,17 +33,16 @@ router.post("/profile", async (req, res) => {
 });
 
 router.post("/find-matches", async (req, res) => {
+  const { level, startTime, endTime, date } = req.body;
 
-    const {level, startTime, endTime, date} = req.body
+  let startTimeArr = startTime.split(":");
+  let endTimeArr = endTime.split(":");
 
-    let startTimeArr = startTime.split(":");
-    let endTimeArr = endTime.split(":");
+  const startDate = new Date(date);
+  startDate.setHours(parseInt(startTimeArr[0], 10));
 
-    const startDate = new Date(date);
-    startDate.setHours(parseInt(startTimeArr[0], 10))
-
-    const endDate = new Date(date);
-    endDate.setHours(parseInt(endTimeArr[0], 10))
+  const endDate = new Date(date);
+  endDate.setHours(parseInt(endTimeArr[0], 10));
 
   try {
     const matches = await knex("matches")
@@ -75,7 +74,9 @@ router.post("/find-matches", async (req, res) => {
     );
 
     if (matches.length === 0) {
-      return res.status(200).json([{ data: "No games available at this time" }]);
+      return res
+        .status(200)
+        .json([{ data: "No games available at this time" }]);
     }
     return res.status(200).json({ data: matches });
   } catch (error) {
@@ -85,14 +86,16 @@ router.post("/find-matches", async (req, res) => {
   }
 });
 
-
 router.get("/find-matches", async (req, res) => {
-
   try {
     const matches = await knex("matches")
       .join("courts", "matches.court_id", "courts.id")
       .join("sport", "matches.sport_id", "sport.id")
-      .select("*");
+      .select([
+        "sport.*",
+        "courts.*", 
+        "matches.*"
+      ]);
 
     await Promise.all(
       matches.map(async (match) => {
@@ -124,6 +127,5 @@ router.get("/find-matches", async (req, res) => {
     });
   }
 });
-
 
 module.exports = router;

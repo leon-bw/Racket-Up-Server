@@ -8,6 +8,11 @@ const knex = require("knex")(configuration);
 
 const jwt = require("jsonwebtoken");
 
+const isValidEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
 router.post("/signup", async (req, res) => {
   const {
     first_name,
@@ -20,15 +25,19 @@ router.post("/signup", async (req, res) => {
   } = req.body;
 
   if (
-    (!first_name ||
-      !last_name ||
-      !email ||
-      !password ||
-      !username ||
-      !skill_level,
-    !sport)
+    !first_name ||
+    !last_name ||
+    !email ||
+    !password ||
+    !username ||
+    !skill_level ||
+    !sport
   ) {
     return res.status(400).json({ error: "Please enter the required fields." });
+  }
+
+  if (!isValidEmail(email)) {
+    return res.status(400).json({ error: "Please provide a valid email address." });
   }
 
   const encryptPassword = bcrypt.hashSync(password, 6);
@@ -45,7 +54,7 @@ router.post("/signup", async (req, res) => {
 
   try {
     await knex("users").insert(newUser);
-    return res.status(201).json(newUser);
+    return res.status(201).json({ message: "User registered successfully." });
   } catch (error) {
     return res
       .status(400)
@@ -89,7 +98,6 @@ router.post("/login", async (req, res) => {
 });
 
 router.get("/profile", async (req, res) => {
-
   if (!req.headers.authorization) {
     return res._construct(401).send({ error: "Please login" });
   }
@@ -110,6 +118,23 @@ router.get("/profile", async (req, res) => {
     return res
       .status(401)
       .json({ error: `Invalid Authorization Token ${error.message}` });
+  }
+});
+
+router.patch("/profile", async (req, res) => {
+  const { userId, sport } = req.body;
+  try {
+    const sportUpdated = await knex("users")
+      .where({ id: userId })
+      .update({ sport });
+    if (sportUpdated) {
+      return res.status(200).json({ message: "Sport updated successfully." });
+    }
+  } catch (error) {
+    console.error("Error updating sport", error);
+    return res.status(500).json({
+      error: "Failed to update chosen sport. Please try again later.",
+    });
   }
 });
 
